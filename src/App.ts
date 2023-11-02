@@ -21,36 +21,35 @@ export class App {
 
         // console.log(webPush.generateVAPIDKeys());
         
-        const publicKey = 'BFg3iN6s_6BoiQ3zPCCoSdwZawOceM_YMLGxtpTe3lX6uTY6k9mk2IAd4y_Ccx3aaaXMszM6uiXY-Rg0agdoWkM';
-        const privateKey = '3eZ0F860HYOr-JvAlBrBt1GSVpI9uGC0Rj7KHws6JZI';
+        const publicKey = 'BCol311jRW4M59BwcFAMiESdjaTHaNGQTJ-kC88feFnLEJ6nC-2JFOBcMX-rLRIO8NaaXYwDRCLn1a_s4XgR384';
+        const privateKey = 'CjLPPZaLJNhv6dynvL_BMURqHwWRpjfI-K2G0PZkXB0';
 
         const sub = {
-            endpoint: 'https://updates.push.services.mozilla.com/wpush/v2/gAAAAABlQMqDdURd4wj6islS6lQlBmlK8MQ-4M5hPWQ7TjygJzZnGbry3T6bSNNLstx__tsa8pWpTVhJ2IjH49i9txLwtCciB-oWLBK8Ilnp34MG4PIomSFpwWO7mBOOxRZujRO4bae0my90sIJK2MHqLa2fOfVpng7m8uKtplb3uMIN6A0PqrU',
+            endpoint: 'https://updates.push.services.mozilla.com/wpush/v2/gAAAAABlQ33HwyGckJgFadvDbKdT_ridScZnUJ-0J8gdzu3cWT9-JZyGVdw1wyTnLLS1BhxfMPkiXWSh9ziwMxY7AgWrEuEPl5BRjDKy4s2cg2IaVgyjP5PXuzz5ZaPhCPkW02WDroTCun5mFmZk9PIRRQ6JFlYi-4eIY2tsEiUHbCAJwAQ7Te4',
             expirationTime: null,
             keys: {
-                p256dh: 'BIbbH0Fm1lFd4GFRRZBjclg19bAKt39G4Diz1URqGUm1jIQrosYgBlURd6wdc-blEA-pV3YdeRZJ26kG5t8jVWs',
-                auth: '_5peZrbiY9VGs1VJp4XvZQ',
+                p256dh: 'BBfElKxsq0AQbwSGQvjo8-9JH7qD1Hgy7ompty4IUp35RamJPt-yFL7tuMncMcaEso3PE8Fwq8g0L3t1of07Xe0',
+                auth: 'd6MTOjqx4r1s-HN5b3PWkw',
             },
         };
 
         const payLoad = {
             notification: {
                 data: { url: 'http://www.youtube.com/funofheuristic' },
-                title: 'Test Notification',
-                vibrate: [100, 50, 100],
+                title: 'Test Notification from Server',
+                vibrate: [100, 50, 100]
             },
         };
 
-        webPush.setVapidDetails(
-            'mailto:asdf@gmil.com',
-            publicKey,
-            privateKey
-        );
+        webPush.setVapidDetails('mailto:sample@mail.com', publicKey, privateKey);
 
-        webPush.sendNotification(
-            sub,
-            JSON.stringify(payLoad)
-        ).catch(err => console.error(err));
+        webPush.sendNotification(sub, JSON.stringify(payLoad))
+        .then((result) => {
+            console.log(result);
+        })
+        .catch((err) => {
+            console.log(err);
+        });
 
         this.app.post("/data", (req, res, next) => {
             console.log('request', req.body);
