@@ -2,6 +2,8 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import webPush from "web-push";
+import morgan from "morgan";
+import path from "path";
 import { PushNotificationRoutes } from "./routes/PushNotificationRoutes";
 
 export class App {
@@ -11,18 +13,46 @@ export class App {
         private app: express.Application = express(),
     ) {
 
-
+        // views for client
+        this.app.use(express.static(path.join(__dirname, "views")));
         this.app.use(express.json());
         this.app.use(express.urlencoded({ extended: true }));
         this.app.use(cors({
-            origin: "*"
+            origin: ["https://172.16.16.104:8080", "https://127.0.0.1:8080"],
         }));
         this.app.use(cookieParser())
+        this.app.use(morgan("dev"));
 
         // console.log(webPush.generateVAPIDKeys());
         
         const publicKey = 'BCol311jRW4M59BwcFAMiESdjaTHaNGQTJ-kC88feFnLEJ6nC-2JFOBcMX-rLRIO8NaaXYwDRCLn1a_s4XgR384';
         const privateKey = 'CjLPPZaLJNhv6dynvL_BMURqHwWRpjfI-K2G0PZkXB0';
+
+        this.app.get("/", (req, res, next) => {
+            res.sendFile("index.html");
+        });
+
+        this.app.post("/send", (req, res, next) => {
+            const payLoad = {
+                notification: {
+                    data: { url: req.body.url },
+                    title: req.body.title,
+                    vibrate: [100, 50, 100]
+                },
+            };
+    
+            webPush.setVapidDetails('mailto:sample@mail.com', publicKey, privateKey);
+    
+            webPush.sendNotification(req.body, JSON.stringify(payLoad))
+            .then((result) => {
+                console.log(result);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+            
+            res.redirect("/");
+        });
 
         // this.app.get("/", (req, res, next) => {
         //     const sub = {

@@ -12,6 +12,7 @@ export class PushNotificationRoutes extends BaseRoutes {
 
     protected initializeRoutes(): void {
         this.router.post('/subscribe', this.pushNotificationController.subscribe);
+        this.router.post('/send', this.pushNotificationController.send);
     }
 
     public get getRouter(): Router {
