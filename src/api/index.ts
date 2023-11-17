@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import webPush from "web-push";
 import mongoose from "mongoose";
-import subscriber from "./models/subscriber";
+import subscriber from "../models/subscriber";
 import morgan from "morgan";
 import dotenv from "dotenv";
 dotenv.config();
