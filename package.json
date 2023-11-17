@@ -4,7 +4,7 @@
   "description": "TypeScript",
   "main": "src/server.ts",
   "scripts": {
-    "start": "npm run build && node ./build/server.js",
+    "start": "node ./build/server.js",
     "dev": "npx nodemon",
     "build": "tsc -p .",
     "cls": "taskkill /F /IM node.exe"
