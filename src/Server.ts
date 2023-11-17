@@ -1,12 +1,10 @@
 import dotenv from "dotenv";
-import { App } from "./App";
+import app from "./index";
 
-class Server {
-    constructor() {
-        dotenv.config();
-        const app = new App();
-        app.start();
-    }
-}
+dotenv.config();
 
-new Server();
+const port = process.env.PORT || 3050;
+
+app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
+});
