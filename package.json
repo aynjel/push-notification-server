@@ -7,7 +7,8 @@
     "start": "node ./build/server.js",
     "dev": "npx nodemon",
     "build": "tsc -p .",
-    "cls": "taskkill /F /IM node.exe"
+    "cls": "taskkill /F /IM node.exe",
+    "vercel-build": "echo hello"
   },
   "keywords": [],
   "author": "",
