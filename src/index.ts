@@ -3,6 +3,7 @@ import cors from "cors";
 import webPush from "web-push";
 import mongoose from "mongoose";
 import subscriber from "../src/models/subscriber";
+import { connectDb } from "./lib/connectDb";
 import morgan from "morgan";
 import dotenv from "dotenv";
 dotenv.config();
