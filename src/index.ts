@@ -36,10 +36,16 @@ app.get("/getSubscribe", async (req, res, next) => {
 
 // save subscription to mongodb
 app.post("/postSubscribe", async (req, res, next) => {
-    const data = req.body;
-    console.log(data);
+    const saveDataPayload = {
+        publicKey: vapidKeys.publicKey,
+        privateKey: vapidKeys.privateKey,
+        userId: req.body.userId,
+        app: req.body.app,
+        subscription: req.body.subscription,
+    };
+    console.log(saveDataPayload);
     // check if subscriber already exists in mongodb
-    const existingSubscriber = await subscriber.findOne({ "subscription.endpoint": data.subscription.endpoint });
+    const existingSubscriber = await subscriber.findOne({ "subscription.endpoint": saveDataPayload.subscription.endpoint });
     if (existingSubscriber) {
         res.status(201).json({
             message: "Subscriber already exists",
@@ -48,13 +54,7 @@ app.post("/postSubscribe", async (req, res, next) => {
         return;
     }
     // save subscriberPayload to mongodb
-    await subscriber.create({
-        publicKey: vapidKeys.publicKey,
-        privateKey: vapidKeys.privateKey,
-        userId: data.userId,
-        app: data.app,
-        subscription: data.subscription,
-    }).then((subscriber) => {
+    await subscriber.create(saveDataPayload).then((subscriber) => {
         res.status(201).json({
             message: "Subscriber created successfully",
             subscriberPublicKey: subscriber.publicKey,
@@ -79,6 +79,7 @@ app.post("/sendNotification", async (req, res, next) => {
     const subscribers = await subscriber.find();
     // send notification to all subscribers
     Promise.all(subscribers.map((subscriber) => {
+        console.log(subscriber);
         webPush.setVapidDetails('mailto:sample@mail.com', vapidKeys.publicKey, vapidKeys.privateKey);
         webPush.sendNotification(subscriber.subscription, JSON.stringify(notificationPayload)).then(() => {
             console.log("Notification sent successfully");
