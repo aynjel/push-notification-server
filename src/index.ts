@@ -28,9 +28,16 @@ mongoose.connect(process.env.MONGODB_URI as string).then(() => {
 const vapidKeys = webPush.generateVAPIDKeys();
 
 app.get("/", async (req, res, next) => {
-    res.status(200).json({
-        message: "Welcome to web push notification",
-    });
+    // RESPOND IF CONNECTED TO MONGODB
+    if (mongoose.connection.readyState === 1) {
+        res.status(200).json({
+            message: "Connected to MongoDB",
+        });
+    } else {
+        res.status(500).json({
+            message: "Error connecting to MongoDB",
+        });
+    }
 });
 
 // send public key to client
