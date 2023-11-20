@@ -27,6 +27,12 @@ mongoose.connect(process.env.MONGODB_URI as string).then(() => {
 
 const vapidKeys = webPush.generateVAPIDKeys();
 
+app.get("/", async (req, res, next) => {
+    res.status(200).json({
+        message: "Welcome to web push notification",
+    });
+});
+
 // send public key to client
 app.get("/getSubscribe", async (req, res, next) => {
     res.status(200).json({
