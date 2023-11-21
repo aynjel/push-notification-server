@@ -25,15 +25,12 @@ mongoose.connect(process.env.MONGODB_URI as string).then(() => {
     console.log(err);
 });
 
-const vapidKeys = {
-    publicKey: "BIUDaysf-IsuDNl1GhhDqCLb13GSW2kRdSaKHw8ooiHUEPWDSQUIWJvPIyPVcP9FMv1NJi5_O-SeBPDxR_4xTMY",
-    privateKey: "-hMLvKmiN_l7VIz2sqRC5sJRNRNayAncazIk_ayLlFU",
-};
+// const vapidKeys = {
+//     publicKey: "BIUDaysf-IsuDNl1GhhDqCLb13GSW2kRdSaKHw8ooiHUEPWDSQUIWJvPIyPVcP9FMv1NJi5_O-SeBPDxR_4xTMY",
+//     privateKey: "-hMLvKmiN_l7VIz2sqRC5sJRNRNayAncazIk_ayLlFU",
+// };
 
-// const vapidKeys = webPush.generateVAPIDKeys();
-
-// const VAPID_PBLC_KEY="BIUDaysf-IsuDNl1GhhDqCLb13GSW2kRdSaKHw8ooiHUEPWDSQUIWJvPIyPVcP9FMv1NJi5_O-SeBPDxR_4xTMY";
-// const VAPID_PRVT_KEY="-hMLvKmiN_l7VIz2sqRC5sJRNRNayAncazIk_ayLlFU";
+const vapidKeys = webPush.generateVAPIDKeys();
 
 app.get("/", async (req, res, next) => {
     // RESPOND IF CONNECTED TO MONGODB
@@ -97,43 +94,43 @@ app.post("/sendNotification", async (req, res, next) => {
         },
     };
 
+    // get all subscribers
+    const subscribers = await subscriber.find();
+    // send notification to all subscribers
+    const response = await Promise.all(subscribers.map((subscriber) => {
+        console.log(subscriber);
+        webPush.setVapidDetails('mailto:sample@mail.com', vapidKeys.publicKey, vapidKeys.privateKey);
+        webPush.sendNotification(subscriber.subscription, JSON.stringify(notificationPayload)).then(() => {
+            console.log("Notification sent successfully");
+        }).catch((err) => {
+            console.error("Error sending notification");
+            console.error(err);
+        });
+    }));
 
-
-    const subscription = {
-        endpoint: "https://updates.push.services.mozilla.com/wpush/v2/gAAAAABlXGYv6Wn2dwvxESXpfmifdbWSw4bRLlnVO5dxpwHZeH_fAWfe8txEOH5LVSXIveh7r96Vbo4y59sOY6pctbVX6EvCcKoH-0Jk6Cw6FvEbVW6vwOJJdhKJB_RWmL3wm3UTE0tEB4ZtFrpRltwrEK35gBYay-7eWHMuhIdLl2CRKn_w8bA",
-        expirationTime: null,
-        keys: {
-          auth: "H6W6lIzMRLHRSPlTY7MmTw",
-          p256dh: "BHRi02RBoxC8z8e7jKDtasD6EOUlh21O4PFN68VWvZS_fAgnyyxIgDvEwJbozh0zb5emQuOEMlYlUT9B_yxqDQ8"
-        }
-      }
-      
-
-    webPush.setVapidDetails('mailto:sample@mail.com', vapidKeys.publicKey, vapidKeys.privateKey);
-    const sendNotif = await webPush.sendNotification(subscription, JSON.stringify(notificationPayload));
-
+    console.log(response);
     res.status(200).json({
-        ...sendNotif
+        response,
     });
 
-    // get all subscribers
-    // const subscribers = await subscriber.find();
-    // send notification to all subscribers
-    // const response = await Promise.all(subscribers.map((subscriber) => {
-    //     console.log(subscriber);
-    //     webPush.setVapidDetails('mailto:sample@mail.com', vapidKeys.publicKey, vapidKeys.privateKey);
-    //     webPush.sendNotification(subscriber.subscription, JSON.stringify(notificationPayload)).then(() => {
-    //         console.log("Notification sent successfully");
-    //     }).catch((err) => {
-    //         console.log("Error sending notification");
-    //         console.log(err);
-    //     });
-    // }));
+    // const subscription = {
+    //     endpoint: "https://updates.push.services.mozilla.com/wpush/v2/gAAAAABlXGYv6Wn2dwvxESXpfmifdbWSw4bRLlnVO5dxpwHZeH_fAWfe8txEOH5LVSXIveh7r96Vbo4y59sOY6pctbVX6EvCcKoH-0Jk6Cw6FvEbVW6vwOJJdhKJB_RWmL3wm3UTE0tEB4ZtFrpRltwrEK35gBYay-7eWHMuhIdLl2CRKn_w8bA",
+    //     expirationTime: null,
+    //     keys: {
+    //       auth: "H6W6lIzMRLHRSPlTY7MmTw",
+    //       p256dh: "BHRi02RBoxC8z8e7jKDtasD6EOUlh21O4PFN68VWvZS_fAgnyyxIgDvEwJbozh0zb5emQuOEMlYlUT9B_yxqDQ8"
+    //     }
+    // }
+      
 
-    // console.log(response);
+    // webPush.setVapidDetails('mailto:sample@mail.com', vapidKeys.publicKey, vapidKeys.privateKey);
+    // const sendNotif = await webPush.sendNotification(subscription, JSON.stringify(notificationPayload));
+
     // res.status(200).json({
-    //     response,
+    //     ...sendNotif
     // });
+
+    
 });
 
 // delete all subscribers
